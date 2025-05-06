@@ -1,38 +1,22 @@
-use session::Session;
-use std::error::Error;
-use termion::color;
+use termion::{color, event::Key};
 
-mod session;
-
-pub struct Interface {
-    session: Session,
-}
+pub struct Interface {}
 
 impl Interface {
     pub fn new() -> Self {
-        Self {
-            session: Session::new(),
-        }
+        Self {}
     }
 
-    pub async fn login(&self) -> Result<(), Box<dyn Error>> {
-        let body = reqwest::get("http://127.0.0.1:3000/").await?.text().await?;
-
-        println!("body = {body:?}");
-
-        Ok(())
-    }
-
-    pub async fn parse(&mut self, nbytes: usize, input: &mut String) -> Result<(), Box<dyn Error>> {
+    pub fn parse(&mut self, nbytes: usize, input: &mut String) {
         input.pop();
         let command = input.as_str();
 
         if nbytes < 1 {
-            return Ok(());
+            return;
         }
 
         if command == "login" {
-            self.login().await?;
+            // self.display_login();
         } else {
             println!(
                 "{}command \"{input}\" does not exist{}",
@@ -40,11 +24,7 @@ impl Interface {
                 color::Fg(color::Reset)
             );
         }
-
-        // match input.as_str() {
-        //     "login" => self.login(),
-        //     _ => println!("{input}: command not found"),
-        // };
-        Ok(())
     }
+
+    pub fn handle_input(&self, input: Key) {}
 }
